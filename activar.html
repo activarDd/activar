@@ -17,9 +17,18 @@
     <option value="2">QR</option>
 </select>
 
+
+<br>
+<br>
+<br>
 <!-- Agrega un botón para activar el usuario y ejecutar la lógica de generación -->
 <button onclick="activarUsuario()">Activar Usuario</button>
-
+<br>
+<br>
+<br>
+<center><div id="cantidadGenerada" style="background-color: #fff; padding: 10px; border: 1px solid #ccc;">
+    Cantidad generada por manutodorov: <span id="valorGenerado">Cargando...</span>
+</div></center>
     <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-firestore.js"></script>
     <!-- Agrega los scripts de Firebase si es necesario -->
@@ -81,6 +90,30 @@ function activarUsuario() {
             console.error('Error al consultar la base de datos:', error);
         });
 }
+// ... (configuración de Firebase y otras funciones) ...
+
+// Agrega esta función para obtener y mostrar la cantidad generada
+function mostrarCantidadGenerada() {
+    const manutodorovRef = db.collection('Usuarios').doc('manutodorov');
+
+    manutodorovRef.get()
+        .then((doc) => {
+            if (doc.exists) {
+                const cantidadGenerada = doc.data().Generado || 0;
+                document.getElementById('valorGenerado').textContent = cantidadGenerada;
+            } else {
+                console.log("El documento de manutodorov no existe.");
+            }
+        })
+        .catch((error) => {
+            console.error('Error al obtener la cantidad generada:', error);
+        });
+}
+
+// Llama a la función al cargar la página
+window.onload = function() {
+    mostrarCantidadGenerada();
+};
 
     </script>
 </body>
