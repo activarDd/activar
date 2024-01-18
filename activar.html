@@ -4,31 +4,107 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Activar Usuario</title>
-    <!-- Agrega tus enlaces a Firebase si es necesario -->
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .form {
+            background-color: #ffffff;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            max-width: 400px;
+            width: 100%;
+        }
+
+        h2 {
+            text-align: center;
+            color: #333333;
+        }
+
+        label {
+            display: block;
+            margin-top: 10px;
+            color: #555555;
+        }
+
+        input,
+        select,
+        button {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+            margin-bottom: 10px;
+            box-sizing: border-box;
+            border: 1px solid #cccccc;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+
+        button {
+            background-color: #4caf50;
+            color: #ffffff;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        #cantidadGenerada {
+            background-color: #ffffff;
+            padding: 10px;
+            border: 1px solid #cccccc;
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        #codigoGenerado {
+            margin-top: 20px;
+        }
+
+        #mensajeCopia {
+            margin-top: 20px;
+            color: #4caf50;
+        }
+    </style>
 </head>
+
 <body>
-    <h2>Activar Usuario</h2>
-    <label for="mail">Correo Electrónico:</label>
-    <input type="text" id="mail" placeholder="Ingrese el correo electrónico">
- <!-- Agrega un elemento de selección (dropdown) para la versión -->
-<label for="version">Versión:</label>
-<select id="version">
-    <option value="1">NORMAL</option>
-    <option value="2">QR</option>
-</select>
+    <div id="form">
+        <h2>Activar Usuario</h2>
+        <label for="mail">Correo Electrónico:</label>
+        <input type="text" id="mail" placeholder="Ingrese el correo electrónico">
+
+        <label for="version">Versión:</label>
+        <select id="version">
+            <option value="1">NORMAL</option>
+            <option value="2">QR</option>
+        </select>
+
+        <button onclick="activarUsuario()">Activar Usuario</button>
+
+        <div id="cantidadGenerada">
+            Cantidad generada por manutodorov: <span id="valorGenerado">Cargando...</span>
+        </div>
+
+        <button onclick="generarCodigo('NORMAL')">Generar Código Normal</button>
+        <button onclick="generarCodigo('QR')">Generar Código QR</button>
+
+        <div id="codigoGenerado"></div>
+
+        <div id="mensajeCopia"></div>
+    </div>
 
 
-<br>
-<br>
-<br>
-<!-- Agrega un botón para activar el usuario y ejecutar la lógica de generación -->
-<button onclick="activarUsuario()">Activar Usuario</button>
-<br>
-<br>
-<br>
-<center><div id="cantidadGenerada" style="background-color: #fff; padding: 10px; border: 1px solid #ccc;">
-    Cantidad generada por manutodorov: <span id="valorGenerado">Cargando...</span>
-</div></center>
     <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-firestore.js"></script>
     <!-- Agrega los scripts de Firebase si es necesario -->
@@ -114,6 +190,55 @@ function mostrarCantidadGenerada() {
 window.onload = function() {
     mostrarCantidadGenerada();
 };
+
+
+
+function generarCodigo(tipo) {
+    const codigosRef = db.collection('codigos');
+
+    codigosRef.where('tipo', '==', tipo)
+        .limit(1)
+        .get()
+        .then((querySnapshot) => {
+            if (querySnapshot.size > 0) {
+                const codigo = querySnapshot.docs[0].data().codigo;
+                mostrarCodigo(codigo);
+                const codigoDocId = querySnapshot.docs[0].id;
+                    codigosRef.doc(codigoDocId).delete()
+            } else {
+                alert(`No hay códigos disponibles para ${tipo}`);
+            }
+        })
+        .catch((error) => {
+            console.error('Error al generar código:', error);
+        });
+}
+
+function mostrarCodigo(codigo) {
+    const codigoGeneradoElement = document.getElementById('codigoGenerado');
+    codigoGeneradoElement.innerHTML = `<p>Código generado: ${codigo}</p>`;
+
+    // Agrega un botón para copiar el código
+    const botonCopiar = document.createElement('button');
+    botonCopiar.textContent = 'Copiar Código';
+    botonCopiar.onclick = function() {
+        copiarCodigo(codigo);
+    };
+    codigoGeneradoElement.appendChild(botonCopiar);
+}
+
+function copiarCodigo(codigo) {
+    const el = document.createElement('textarea');
+    el.value = codigo;
+    document.body.appendChild(el);
+    el.select();
+    document.execCommand('copy');
+    document.body.removeChild(el);
+
+    // Muestra el mensaje de copia
+    const mensajeCopiaElement = document.getElementById('mensajeCopia');
+    mensajeCopiaElement.innerHTML = '<p>Código copiado al portapapeles.</p>';
+}
 
     </script>
 </body>
