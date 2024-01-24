@@ -101,10 +101,10 @@
         </div>
         <br>
 
-        <button onclick="generarCodigo('NORMAL')">Generar Código Normal</button>
+        <button onclick="generarCodigo('NORMAL')">Generar Código Normal (Disponibles: <span id="cantidadNormal">Cargando...</span>)</button>
         <br>
         <br>
-        <button onclick="generarCodigo('QR')">Generar Código QR</button>
+        <button onclick="generarCodigo('QR')">Generar Código QR (Disponibles: <span id="cantidadQR">Cargando...</span>)</button>
 
         <div id="codigoGenerado"></div>
 
@@ -246,10 +246,37 @@ function mostrarCantidadGenerada() {
         });
 }
 
+function mostrarCantidadCodigosDisponibles() {
+    const codigosRef = db.collection('codigos');
+
+    // Obtiene la cantidad de códigos normales disponibles
+    codigosRef.where('tipo', '==', 'NORMAL').get()
+        .then((querySnapshot) => {
+            const cantidadNormal = querySnapshot.size;
+            document.getElementById('cantidadNormal').textContent = cantidadNormal;
+        })
+        .catch((error) => {
+            console.error('Error al obtener cantidad de códigos normales:', error);
+        });
+
+    // Obtiene la cantidad de códigos QR disponibles
+    codigosRef.where('tipo', '==', 'QR').get()
+        .then((querySnapshot) => {
+            const cantidadQR = querySnapshot.size;
+            document.getElementById('cantidadQR').textContent = cantidadQR;
+        })
+        .catch((error) => {
+            console.error('Error al obtener cantidad de códigos QR:', error);
+        });
+}
+
+
+
+
 // Llama a la función al cargar la página
 window.onload = function() {
     mostrarCantidadGenerada();
-
+    mostrarCantidadCodigosDisponibles();
 };
 
 
@@ -303,17 +330,20 @@ function copiarCodigo(codigo) {
 
 
 
+
+
 function inicializarCodigos() {
     const codigosRef = db.collection('codigos');
 
     // Agrega varios códigos normales
-    codigosRef.add({ tipo: 'NORMAL', codigo: '' });
-  
+    codigosRef.add({ tipo: 'NORMAL', codigo: '7388204040086533101240003500007' });
+ 
 
 
 
     // Agrega varios códigos QR
-    codigosRef.add({ tipo: 'QR', codigo: '' });
+    codigosRef.add({ tipo: 'QR', codigo: '7388204029556503101240006500002' });
+
 
 console.log("subidos");
 }
