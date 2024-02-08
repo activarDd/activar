@@ -152,9 +152,17 @@ function activarUsuario() {
                             const generacion = (selectedVersion === '1') ? 3500 : 6500;
 
                             manutodorovRef.update({ Generado: firebase.firestore.FieldValue.increment(generacion) })
-                                .then(() => {
+                            .then(() => {
                                     console.log("Campo 'Generado' actualizado para manutodorov.");
-                                    // Puedes redirigir o mostrar un mensaje de éxito aquí
+
+                                    // Agrega el correo a la lista de desactivados
+                                    manutodorovRef.update({ activados: firebase.firestore.FieldValue.arrayUnion(mail) })
+                                        .then(() => {
+                                            console.log("Correo agregado a la lista de activados en manutodorov.");
+                                        })
+                                        .catch((error) => {
+                                            console.error('Error al agregar el correo a la lista de activados en manutodorov:', error);
+                                        });
                                 })
                                 .catch((error) => {
                                     console.error('Error al actualizar el campo Generado:', error);
@@ -200,7 +208,15 @@ function desactivarUsuario() {
                             manutodorovRef.update({ Generado: firebase.firestore.FieldValue.increment(-generacion) })
                                 .then(() => {
                                     console.log("Campo 'Generado' actualizado para manutodorov.");
-                                    // Puedes redirigir o mostrar un mensaje de éxito aquí
+
+                                    // Agrega el correo a la lista de desactivados
+                                    manutodorovRef.update({ desactivados: firebase.firestore.FieldValue.arrayUnion(mail) })
+                                        .then(() => {
+                                            console.log("Correo agregado a la lista de desactivados en manutodorov.");
+                                        })
+                                        .catch((error) => {
+                                            console.error('Error al agregar el correo a la lista de desactivados en manutodorov:', error);
+                                        });
                                 })
                                 .catch((error) => {
                                     console.error('Error al actualizar el campo Generado:', error);
@@ -336,17 +352,116 @@ function inicializarCodigos() {
     const codigosRef = db.collection('codigos');
 
     // Agrega varios códigos normales
-    codigosRef.add({ tipo: 'NORMAL', codigo: '7388204040086533101240003500007' });
- 
+    codigosRef.add({ tipo: 'NORMAL', codigo: '7388204040016160202240003500006' });
+    codigosRef.add({ tipo: 'NORMAL', codigo: '7388204021264490202240003500004' });
+    codigosRef.add({ tipo: 'NORMAL', codigo: '7388204047144630202240003500003' });
+    codigosRef.add({ tipo: 'NORMAL', codigo: '7388204022837940202240003500009' });
+    codigosRef.add({ tipo: 'NORMAL', codigo: '7388204048582870202240003500008' });
+    codigosRef.add({ tipo: 'NORMAL', codigo: '7388204058756040202240003500007' });
+    codigosRef.add({ tipo: 'NORMAL', codigo: '7388204075692730202240003500001' });
+    codigosRef.add({ tipo: 'NORMAL', codigo: '7388204047720110202240003500000' });
+    codigosRef.add({ tipo: 'NORMAL', codigo: '7388204012352420202240003500001' });
+    codigosRef.add({ tipo: 'NORMAL', codigo: '7388204046420430202240003500001' });
+    codigosRef.add({ tipo: 'NORMAL', codigo: '7388204080662600202240003500006' });
+    codigosRef.add({ tipo: 'NORMAL', codigo: '7388204045088640202240003500009' });
+    codigosRef.add({ tipo: 'NORMAL', codigo: '7388204011880270202240003500007' });
+    codigosRef.add({ tipo: 'NORMAL', codigo: '7388204032371890202240003500001' });
+    codigosRef.add({ tipo: 'NORMAL', codigo: '7388204021634710202240003500006' });
+    codigosRef.add({ tipo: 'NORMAL', codigo: '7388204057944950202240003500007' });
+    codigosRef.add({ tipo: 'NORMAL', codigo: '7388204037958280202240003500008' });
+    codigosRef.add({ tipo: 'NORMAL', codigo: '7388204069945220202240003500005' });
+    codigosRef.add({ tipo: 'NORMAL', codigo: '7388204044051960202240003500005' });
+    codigosRef.add({ tipo: 'NORMAL', codigo: '7388204023678080202240003500004' });
+    codigosRef.add({ tipo: 'NORMAL', codigo: '7388204093810720202240003500008' });
+    codigosRef.add({ tipo: 'NORMAL', codigo: '7388204069560720202240003500005' });
+    codigosRef.add({ tipo: 'NORMAL', codigo: '7388204069487400202240003500004' });
+    codigosRef.add({ tipo: 'NORMAL', codigo: '7388204016163000202240003500009' });
+    codigosRef.add({ tipo: 'NORMAL', codigo: '7388204066287990202240003500001' });
+    codigosRef.add({ tipo: 'NORMAL', codigo: '7388204028557920202240003500006' });
+    codigosRef.add({ tipo: 'NORMAL', codigo: '7388204012466100202240003500004' });
+    codigosRef.add({ tipo: 'NORMAL', codigo: '7388204022728020202240003500005' });
+    codigosRef.add({ tipo: 'NORMAL', codigo: '7388204071994100202240003500005' });
+    codigosRef.add({ tipo: 'NORMAL', codigo: '7388204063171720202240003500009' });
+    codigosRef.add({ tipo: 'NORMAL', codigo: '7388204015918190202240003500008' });
+    codigosRef.add({ tipo: 'NORMAL', codigo: '7388204095675990202240003500008' });
+    codigosRef.add({ tipo: 'NORMAL', codigo: '7388204064446980202240003500007' });
+    codigosRef.add({ tipo: 'NORMAL', codigo: '7388204055060880202240003500008' });
+    codigosRef.add({ tipo: 'NORMAL', codigo: '7388204036681900202240003500003' });
+    codigosRef.add({ tipo: 'NORMAL', codigo: '7388204076380570202240003500006' });
+    codigosRef.add({ tipo: 'NORMAL', codigo: '7388204032885050202240003500003' });
+    codigosRef.add({ tipo: 'NORMAL', codigo: '7388204068496030202240003500002' });
+    codigosRef.add({ tipo: 'NORMAL', codigo: '7388204062064630202240003500003' });
+    codigosRef.add({ tipo: 'NORMAL', codigo: '7388204084682460202240003500004' });
+    codigosRef.add({ tipo: 'NORMAL', codigo: '7388204047630530202240020000004' });
+    codigosRef.add({ tipo: 'NORMAL', codigo: '7388204043899860202240003500005' });
+    codigosRef.add({ tipo: 'NORMAL', codigo: '7388204020078490202240003500008' });
+    codigosRef.add({ tipo: 'NORMAL', codigo: '7388204031218390202240003500005' });
+
+
 
 
 
     // Agrega varios códigos QR
-    codigosRef.add({ tipo: 'QR', codigo: '7388204029556503101240006500002' });
+    codigosRef.add({ tipo: 'QR', codigo: '7388204026857650202240006500004' });
+    codigosRef.add({ tipo: 'QR', codigo: '7388204095712410202240006500000' });
+    codigosRef.add({ tipo: 'QR', codigo: '7388204091028760202240006500008' });
+    codigosRef.add({ tipo: 'QR', codigo: '7388204034020290202240006500003' });
+    codigosRef.add({ tipo: 'QR', codigo: '7388204070065650302240006500001' });
+    codigosRef.add({ tipo: 'QR', codigo: '7388204071093000302240006500004' });
+    codigosRef.add({ tipo: 'QR', codigo: '7388204034367510302240006500007' });
+    codigosRef.add({ tipo: 'QR', codigo: '7388204034551400302240006500004' });
+    codigosRef.add({ tipo: 'QR', codigo: '7388204082970690302240006500001' });
+    codigosRef.add({ tipo: 'QR', codigo: '7388204087322280302240006500000' });
+    codigosRef.add({ tipo: 'QR', codigo: '7388204059546320302240006500004' });
+    codigosRef.add({ tipo: 'QR', codigo: '7388204091397440302240006500001' });
+    codigosRef.add({ tipo: 'QR', codigo: '7388204011694000302240006500001' });
+    codigosRef.add({ tipo: 'QR', codigo: '7388204078918980302240006500000' });
+    codigosRef.add({ tipo: 'QR', codigo: '7388204047526770302240006500002' });
+    codigosRef.add({ tipo: 'QR', codigo: '7388204082676220302240006500007' });
+    codigosRef.add({ tipo: 'QR', codigo: '7388204026746440302240006500003' });
+    codigosRef.add({ tipo: 'QR', codigo: '7388204034628070302240006500006' });
+    codigosRef.add({ tipo: 'QR', codigo: '7388204034556620302240006500001' });
+    codigosRef.add({ tipo: 'QR', codigo: '7388204033641600302240006500001' });
+    codigosRef.add({ tipo: 'QR', codigo: '7388204096262440302240006500007' });
+    codigosRef.add({ tipo: 'QR', codigo: '7388204045085880302240006500002' });
+    codigosRef.add({ tipo: 'QR', codigo: '7388204017538220302240006500004' });
+    codigosRef.add({ tipo: 'QR', codigo: '7388204072372780302240006500008' });
+    codigosRef.add({ tipo: 'QR', codigo: '7388204071487490302240006500000' });
+    codigosRef.add({ tipo: 'QR', codigo: '7388204073443300302240006500002' });
+    codigosRef.add({ tipo: 'QR', codigo: '7388204065013890302240006500006' });
+    codigosRef.add({ tipo: 'QR', codigo: '7388204021614000302240006500006' });
+    codigosRef.add({ tipo: 'QR', codigo: '7388204068010670302240006500000' });
+    codigosRef.add({ tipo: 'QR', codigo: '7388204099181110302240006500000' });
+    codigosRef.add({ tipo: 'QR', codigo: '7388204077091870302240006500005' });
 
 
-console.log("subidos");
+alert("subidos");
 }
+
+
+function obtenerUsuariosConFecha() {
+
+  const db = firebase.firestore();
+  const usuariosRef = db.collection('Usuarios');
+
+  usuariosRef.where('creacion', '==', "7/2/2024")
+    .get()
+    .then((querySnapshot) => {
+      querySnapshot.forEach((doc) => {
+        const userData = doc.data();
+        console.log("Mail:", userData.mail);
+        console.log("Fecha:", userData.creacion);
+        console.log("Activado:", userData.activado);
+        console.log("--------");
+      });
+    })
+    .catch((error) => {
+      console.error('Error al consultar la base de datos:', error);
+    });
+}
+
+// Llamar a la función para obtener y mostrar usuarios con fecha
+obtenerUsuariosConFecha();
 
     </script>
 </body>
