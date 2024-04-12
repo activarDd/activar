@@ -80,16 +80,12 @@
 
 <body>
     <div id="form">
-        <h2>Activar Usuario</h2>
+        <h2>Activar Usuario PAGINA2</h2>
         <label for="mail">Correo Electrónico:</label>
         <input type="text" id="mail" placeholder="Ingrese el correo electrónico">
 
 
-        <label for="version">Versión:</label>
-        <select id="version">
-            <option value="1">NORMAL</option>
-            <option value="2">QR</option>
-        </select>
+
 
         <button onclick="activarUsuario()">Activar Usuario</button>
         <br>
@@ -101,10 +97,9 @@
         </div>
         <br>
 
-        <button onclick="generarCodigo('NORMAL')">Generar Código Normal (Disponibles: <span id="cantidadNormal">Cargando...</span>)</button>
+        <a href="activar2.html"><button>CAMBIAR A PAGINA 1</button></a>
         <br>
         <br>
-        <button onclick="generarCodigo('QR')">Generar Código QR (Disponibles: <span id="cantidadQR">Cargando...</span>)</button>
 
         <div id="codigoGenerado"></div>
 
@@ -117,14 +112,15 @@
     <!-- Agrega los scripts de Firebase si es necesario -->
     <script>
         // Reemplaza con tu configuración de Firebase
-const firebaseConfig = {
-    apiKey: "AIzaSyC-VuSbZtYwfeB8PfbG_py75yGu9OTcRIQ",
-    authDomain: "miargentina-76248.firebaseapp.com",
-    projectId: "miargentina-76248",
-    storageBucket: "miargentina-76248.appspot.com",
-    messagingSenderId: "673479424832",
-    appId: "1:673479424832:web:bbe4fa209631fcf51718a5"
-};
+        const firebaseConfig = {
+  apiKey: "AIzaSyDpGuPTq1CeHodGn2f4fnsAZgCJ2eYHlfY",
+  authDomain: "miargentina2.firebaseapp.com",
+  projectId: "miargentina2",
+  storageBucket: "miargentina2.appspot.com",
+  messagingSenderId: "549784690135",
+  appId: "1:549784690135:web:d0a06dfaa2405359d73f92",
+  measurementId: "G-FVFMKYCXGL"
+};    
 
 const app = firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
