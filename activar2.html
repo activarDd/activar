@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Activar Usuario</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .form {
+            background-color: #ffffff;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            max-width: 400px;
+            width: 100%;
+        }
+
+        h2 {
+            text-align: center;
+            color: #333333;
+        }
+
+        label {
+            display: block;
+            margin-top: 10px;
+            color: #555555;
+        }
+
+        input,
+        select,
+        button {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+            margin-bottom: 10px;
+            box-sizing: border-box;
+            border: 1px solid #cccccc;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+
+        button {
+            background-color: #4caf50;
+            color: #ffffff;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        #cantidadGenerada {
+            background-color: #ffffff;
+            padding: 10px;
+            border: 1px solid #cccccc;
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        #codigoGenerado {
+            margin-top: 20px;
+        }
+
+        #mensajeCopia {
+            margin-top: 20px;
+            color: #4caf50;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="form">
+        <h2>Activar Usuario PAGINA1</h2>
+        <label for="mail">Correo Electrónico:</label>
+        <input type="text" id="mail" placeholder="Ingrese el correo electrónico">
+
+
+
+
+        <button onclick="activarUsuario()">Activar Usuario</button>
+        <br>
+        <br>
+        <button onclick="desactivarUsuario()">Desactivar Usuario</button>
+
+        <div id="cantidadGenerada">
+            Cantidad generada por manutodorov: <span id="valorGenerado">Cargando...</span>
+        </div>
+        <br>
+
+         <a href="activar.html"><button>CAMBIAR A PAGINA 2</button></a>
+        <br>
+        <br>
+
+        <div id="codigoGenerado"></div>
+
+        <div id="mensajeCopia"></div>
+    </div>
+
+
+    <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-firestore.js"></script>
+    <!-- Agrega los scripts de Firebase si es necesario -->
+    <script>
+        // Reemplaza con tu configuración de Firebase
+        const firebaseConfig = {
+  apiKey: "AIzaSyC-VuSbZtYwfeB8PfbG_py75yGu9OTcRIQ",
+  authDomain: "miargentina-76248.firebaseapp.com",
+  projectId: "miargentina-76248",
+  storageBucket: "miargentina-76248.appspot.com",
+  messagingSenderId: "673479424832",
+  appId: "1:673479424832:web:bbe4fa209631fcf51718a5"
+};
+
+const app = firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+
+function activarUsuario() {
+    const mail = document.getElementById('mail').value;
+    const selectedVersion = document.getElementById('version').value;
+
+    const usuariosRef = db.collection('Usuarios');
+
+    usuariosRef.where('mail', '==', mail)
+        .get()
+        .then((querySnapshot) => {
+            if (querySnapshot.size > 0) {
+                querySnapshot.forEach((doc) => {
+                    const usuarioDoc = usuariosRef.doc(doc.id);
+
+                    // Actualiza el campo 'activado' a true
+                    usuarioDoc.update({ activado: true })
+                        .then(() => {
+                            alert("Usuario activado correctamente.");
+
+                            // Agrega la lógica para actualizar el campo 'Generado' de 'manutodorov'
+                            const manutodorovRef = usuariosRef.doc('manutodorov');
+                            const generacion = (selectedVersion === '1') ? 3500 : 6500;
+
+                            manutodorovRef.update({ Generado: firebase.firestore.FieldValue.increment(generacion) })
+                            .then(() => {
+                                    console.log("Campo 'Generado' actualizado para manutodorov.");
+
+                                    // Agrega el correo a la lista de desactivados
+                                    manutodorovRef.update({ activados: firebase.firestore.FieldValue.arrayUnion(mail) })
+                                        .then(() => {
+                                            console.log("Correo agregado a la lista de activados en manutodorov.");
+                                        })
+                                        .catch((error) => {
+                                            console.error('Error al agregar el correo a la lista de activados en manutodorov:', error);
+                                        });
+                                })
+                                .catch((error) => {
+                                    console.error('Error al actualizar el campo Generado:', error);
+                                });
+                        })
+                        .catch((error) => {
+                            console.error('Error al activar usuario:', error);
+                        });
+                });
+            } else {
+                alert("El usuario no existe");
+                // Puedes manejar el caso donde el usuario no existe
+            }
+        })
+        .catch((error) => {
+            console.error('Error al consultar la base de datos:', error);
+        });
+}
+
+
+function desactivarUsuario() {
+    const mail = document.getElementById('mail').value;
+    const selectedVersion = document.getElementById('version').value;
+
+    const usuariosRef = db.collection('Usuarios');
+
+    usuariosRef.where('mail', '==', mail)
+        .get()
+        .then((querySnapshot) => {
+            if (querySnapshot.size > 0) {
+                querySnapshot.forEach((doc) => {
+                    const usuarioDoc = usuariosRef.doc(doc.id);
+
+                    // Actualiza el campo 'activado' a false
+                    usuarioDoc.update({ activado: false })
+                        .then(() => {
+                            alert("Usuario desactivado correctamente.");
+
+                            // Resta la cantidad correspondiente en el campo 'Generado' de 'manutodorov'
+                            const manutodorovRef = usuariosRef.doc('manutodorov');
+                            const generacion = (selectedVersion === '1') ? 3500 : 6500;
+
+                            manutodorovRef.update({ Generado: firebase.firestore.FieldValue.increment(-generacion) })
+                                .then(() => {
+                                    console.log("Campo 'Generado' actualizado para manutodorov.");
+
+                                    // Agrega el correo a la lista de desactivados
+                                    manutodorovRef.update({ desactivados: firebase.firestore.FieldValue.arrayUnion(mail) })
+                                        .then(() => {
+                                            console.log("Correo agregado a la lista de desactivados en manutodorov.");
+                                        })
+                                        .catch((error) => {
+                                            console.error('Error al agregar el correo a la lista de desactivados en manutodorov:', error);
+                                        });
+                                })
+                                .catch((error) => {
+                                    console.error('Error al actualizar el campo Generado:', error);
+                                });
+                        })
+                        .catch((error) => {
+                            console.error('Error al desactivar usuario:', error);
+                        });
+                });
+            } else {
+                alert("El usuario no existe");
+                // Puedes manejar el caso donde el usuario no existe
+            }
+        })
+        .catch((error) => {
+            console.error('Error al consultar la base de datos:', error);
+        });
+}
+
+
+
+
+
+
+
+
+
+// Agrega esta función para obtener y mostrar la cantidad generada
+function mostrarCantidadGenerada() {
+    const manutodorovRef = db.collection('Usuarios').doc('manutodorov');
+
+    manutodorovRef.get()
+        .then((doc) => {
+            if (doc.exists) {
+                const cantidadGenerada = doc.data().Generado || 0;
+                document.getElementById('valorGenerado').textContent = cantidadGenerada;
+            } else {
+                console.log("El documento de manutodorov no existe.");
+            }
+        })
+        .catch((error) => {
+            console.error('Error al obtener la cantidad generada:', error);
+        });
+}
+
+function mostrarCantidadCodigosDisponibles() {
+    const codigosRef = db.collection('codigos');
+
+    // Obtiene la cantidad de códigos normales disponibles
+    codigosRef.where('tipo', '==', 'NORMAL').get()
+        .then((querySnapshot) => {
+            const cantidadNormal = querySnapshot.size;
+            document.getElementById('cantidadNormal').textContent = cantidadNormal;
+        })
+        .catch((error) => {
+            console.error('Error al obtener cantidad de códigos normales:', error);
+        });
+
+    // Obtiene la cantidad de códigos QR disponibles
+    codigosRef.where('tipo', '==', 'QR').get()
+        .then((querySnapshot) => {
+            const cantidadQR = querySnapshot.size;
+            document.getElementById('cantidadQR').textContent = cantidadQR;
+        })
+        .catch((error) => {
+            console.error('Error al obtener cantidad de códigos QR:', error);
+        });
+}
+
+
+
+
+// Llama a la función al cargar la página
+window.onload = function() {
+    mostrarCantidadGenerada();
+    mostrarCantidadCodigosDisponibles();
+};
+
+
+
+function generarCodigo(tipo) {
+    const codigosRef = db.collection('codigos');
+
+    codigosRef.where('tipo', '==', tipo)
+        .limit(1)
+        .get()
+        .then((querySnapshot) => {
+            if (querySnapshot.size > 0) {
+                const codigo = querySnapshot.docs[0].data().codigo;
+                mostrarCodigo(codigo);
+                const codigoDocId = querySnapshot.docs[0].id;
+                    codigosRef.doc(codigoDocId).delete()
+            } else {
+                alert(`No hay códigos disponibles para ${tipo}`);
+            }
+        })
+        .catch((error) => {
+            console.error('Error al generar código:', error);
+        });
+}
+
+function mostrarCodigo(codigo) {
+    const codigoGeneradoElement = document.getElementById('codigoGenerado');
+    codigoGeneradoElement.innerHTML = `<p>Código generado: ${codigo}</p>`;
+
+    // Agrega un botón para copiar el código
+    const botonCopiar = document.createElement('button');
+    botonCopiar.textContent = 'Copiar Código';
+    botonCopiar.onclick = function() {
+        copiarCodigo(codigo);
+    };
+    codigoGeneradoElement.appendChild(botonCopiar);
+}
+
+function copiarCodigo(codigo) {
+    const el = document.createElement('textarea');
+    el.value = codigo;
+    document.body.appendChild(el);
+    el.select();
+    document.execCommand('copy');
+    document.body.removeChild(el);
+
+    // Muestra el mensaje de copia
+    const mensajeCopiaElement = document.getElementById('mensajeCopia');
+    mensajeCopiaElement.innerHTML = '<p>Código copiado al portapapeles.</p>';
+}
+
+
+
+
+
+function inicializarCodigos() {
+    const codigosRef = db.collection('codigos');
+
+    // Agrega varios códigos normales
+    codigosRef.add({ tipo: 'NORMAL', codigo: '7388204040016160202240003500006' });
+    codigosRef.add({ tipo: 'NORMAL', codigo: '7388204021264490202240003500004' });
+    codigosRef.add({ tipo: 'NORMAL', codigo: '7388204047144630202240003500003' });
+    codigosRef.add({ tipo: 'NORMAL', codigo: '7388204022837940202240003500009' });
+    codigosRef.add({ tipo: 'NORMAL', codigo: '7388204048582870202240003500008' });
+    codigosRef.add({ tipo: 'NORMAL', codigo: '7388204058756040202240003500007' });
+    codigosRef.add({ tipo: 'NORMAL', codigo: '7388204075692730202240003500001' });
+    codigosRef.add({ tipo: 'NORMAL', codigo: '7388204047720110202240003500000' });
+    codigosRef.add({ tipo: 'NORMAL', codigo: '7388204012352420202240003500001' });
+    codigosRef.add({ tipo: 'NORMAL', codigo: '7388204046420430202240003500001' });
+    codigosRef.add({ tipo: 'NORMAL', codigo: '7388204080662600202240003500006' });
+    codigosRef.add({ tipo: 'NORMAL', codigo: '7388204045088640202240003500009' });
+    codigosRef.add({ tipo: 'NORMAL', codigo: '7388204011880270202240003500007' });
+    codigosRef.add({ tipo: 'NORMAL', codigo: '7388204032371890202240003500001' });
+    codigosRef.add({ tipo: 'NORMAL', codigo: '7388204021634710202240003500006' });
+    codigosRef.add({ tipo: 'NORMAL', codigo: '7388204057944950202240003500007' });
+    codigosRef.add({ tipo: 'NORMAL', codigo: '7388204037958280202240003500008' });
+    codigosRef.add({ tipo: 'NORMAL', codigo: '7388204069945220202240003500005' });
+    codigosRef.add({ tipo: 'NORMAL', codigo: '7388204044051960202240003500005' });
+    codigosRef.add({ tipo: 'NORMAL', codigo: '7388204023678080202240003500004' });
+    codigosRef.add({ tipo: 'NORMAL', codigo: '7388204093810720202240003500008' });
+    codigosRef.add({ tipo: 'NORMAL', codigo: '7388204069560720202240003500005' });
+    codigosRef.add({ tipo: 'NORMAL', codigo: '7388204069487400202240003500004' });
+    codigosRef.add({ tipo: 'NORMAL', codigo: '7388204016163000202240003500009' });
+    codigosRef.add({ tipo: 'NORMAL', codigo: '7388204066287990202240003500001' });
+    codigosRef.add({ tipo: 'NORMAL', codigo: '7388204028557920202240003500006' });
+    codigosRef.add({ tipo: 'NORMAL', codigo: '7388204012466100202240003500004' });
+    codigosRef.add({ tipo: 'NORMAL', codigo: '7388204022728020202240003500005' });
+    codigosRef.add({ tipo: 'NORMAL', codigo: '7388204071994100202240003500005' });
+    codigosRef.add({ tipo: 'NORMAL', codigo: '7388204063171720202240003500009' });
+    codigosRef.add({ tipo: 'NORMAL', codigo: '7388204015918190202240003500008' });
+    codigosRef.add({ tipo: 'NORMAL', codigo: '7388204095675990202240003500008' });
+    codigosRef.add({ tipo: 'NORMAL', codigo: '7388204064446980202240003500007' });
+    codigosRef.add({ tipo: 'NORMAL', codigo: '7388204055060880202240003500008' });
+    codigosRef.add({ tipo: 'NORMAL', codigo: '7388204036681900202240003500003' });
+    codigosRef.add({ tipo: 'NORMAL', codigo: '7388204076380570202240003500006' });
+    codigosRef.add({ tipo: 'NORMAL', codigo: '7388204032885050202240003500003' });
+    codigosRef.add({ tipo: 'NORMAL', codigo: '7388204068496030202240003500002' });
+    codigosRef.add({ tipo: 'NORMAL', codigo: '7388204062064630202240003500003' });
+    codigosRef.add({ tipo: 'NORMAL', codigo: '7388204084682460202240003500004' });
+    codigosRef.add({ tipo: 'NORMAL', codigo: '7388204047630530202240020000004' });
+    codigosRef.add({ tipo: 'NORMAL', codigo: '7388204043899860202240003500005' });
+    codigosRef.add({ tipo: 'NORMAL', codigo: '7388204020078490202240003500008' });
+    codigosRef.add({ tipo: 'NORMAL', codigo: '7388204031218390202240003500005' });
+
+
+
+
+
+    // Agrega varios códigos QR
+    codigosRef.add({ tipo: 'QR', codigo: '7388204026857650202240006500004' });
+    codigosRef.add({ tipo: 'QR', codigo: '7388204095712410202240006500000' });
+    codigosRef.add({ tipo: 'QR', codigo: '7388204091028760202240006500008' });
+    codigosRef.add({ tipo: 'QR', codigo: '7388204034020290202240006500003' });
+    codigosRef.add({ tipo: 'QR', codigo: '7388204070065650302240006500001' });
+    codigosRef.add({ tipo: 'QR', codigo: '7388204071093000302240006500004' });
+    codigosRef.add({ tipo: 'QR', codigo: '7388204034367510302240006500007' });
+    codigosRef.add({ tipo: 'QR', codigo: '7388204034551400302240006500004' });
+    codigosRef.add({ tipo: 'QR', codigo: '7388204082970690302240006500001' });
+    codigosRef.add({ tipo: 'QR', codigo: '7388204087322280302240006500000' });
+    codigosRef.add({ tipo: 'QR', codigo: '7388204059546320302240006500004' });
+    codigosRef.add({ tipo: 'QR', codigo: '7388204091397440302240006500001' });
+    codigosRef.add({ tipo: 'QR', codigo: '7388204011694000302240006500001' });
+    codigosRef.add({ tipo: 'QR', codigo: '7388204078918980302240006500000' });
+    codigosRef.add({ tipo: 'QR', codigo: '7388204047526770302240006500002' });
+    codigosRef.add({ tipo: 'QR', codigo: '7388204082676220302240006500007' });
+    codigosRef.add({ tipo: 'QR', codigo: '7388204026746440302240006500003' });
+    codigosRef.add({ tipo: 'QR', codigo: '7388204034628070302240006500006' });
+    codigosRef.add({ tipo: 'QR', codigo: '7388204034556620302240006500001' });
+    codigosRef.add({ tipo: 'QR', codigo: '7388204033641600302240006500001' });
+    codigosRef.add({ tipo: 'QR', codigo: '7388204096262440302240006500007' });
+    codigosRef.add({ tipo: 'QR', codigo: '7388204045085880302240006500002' });
+    codigosRef.add({ tipo: 'QR', codigo: '7388204017538220302240006500004' });
+    codigosRef.add({ tipo: 'QR', codigo: '7388204072372780302240006500008' });
+    codigosRef.add({ tipo: 'QR', codigo: '7388204071487490302240006500000' });
+    codigosRef.add({ tipo: 'QR', codigo: '7388204073443300302240006500002' });
+    codigosRef.add({ tipo: 'QR', codigo: '7388204065013890302240006500006' });
+    codigosRef.add({ tipo: 'QR', codigo: '7388204021614000302240006500006' });
+    codigosRef.add({ tipo: 'QR', codigo: '7388204068010670302240006500000' });
+    codigosRef.add({ tipo: 'QR', codigo: '7388204099181110302240006500000' });
+    codigosRef.add({ tipo: 'QR', codigo: '7388204077091870302240006500005' });
+
+
+alert("subidos");
+}
+
+
+function obtenerUsuariosConFecha() {
+
+  const db = firebase.firestore();
+  const usuariosRef = db.collection('Usuarios');
+
+  usuariosRef.where('creacion', '==', "7/2/2024")
+    .get()
+    .then((querySnapshot) => {
+      querySnapshot.forEach((doc) => {
+        const userData = doc.data();
+        console.log("Mail:", userData.mail);
+        console.log("Fecha:", userData.creacion);
+        console.log("Activado:", userData.activado);
+        console.log("--------");
+      });
+    })
+    .catch((error) => {
+      console.error('Error al consultar la base de datos:', error);
+    });
+}
+
+// Llamar a la función para obtener y mostrar usuarios con fecha
+obtenerUsuariosConFecha();
+
+    </script>
+</body>
+</html>
