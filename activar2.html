@@ -95,11 +95,14 @@
         <br>
         <br>
         <button onclick="desactivarUsuario()">Desactivar Usuario</button>
-
+        <br>
+        <br>
+        <button onclick="suscripcionUsuario()">SUCRIPCION 30 DIAS</button>
         <div id="cantidadGenerada">
             Cantidad generada por manutodorov: <span id="valorGenerado">Cargando...</span>
         </div>
         <br>
+        <div id="cantidadUsuariosActivados"></div>
 
         <br>
         <br>
@@ -236,7 +239,61 @@ function desactivarUsuario() {
 }
 
 
+function suscripcionUsuario() {
+    const mail = document.getElementById('mail').value;
 
+    const usuariosRef = db.collection('Usuarios');
+
+    usuariosRef.where('mail', '==', mail)
+        .get()
+        .then((querySnapshot) => {
+            if (querySnapshot.size > 0) {
+                querySnapshot.forEach((doc) => {
+                    const usuarioDoc = usuariosRef.doc(doc.id);
+                    
+                    var fechaHoraActual = new Date();
+                    var horaActual = fechaHoraActual.toLocaleTimeString();
+                    var fechaActual = fechaHoraActual.toLocaleDateString();
+                    // Actualiza el campo 'activado' a false
+
+                    usuarioDoc.update({ fechaActivacion: fechaActual })
+                        .then(() => {
+                            alert("Usuario membrisiado correctamente.");
+
+                            // Resta la cantidad correspondiente en el campo 'Generado' de 'manutodorov'
+                            const manutodorovRef = usuariosRef.doc('manutodorov');
+                            const generacion = 1000;
+
+                            manutodorovRef.update({ Generado: firebase.firestore.FieldValue.increment(generacion) })
+                                .then(() => {
+                                    console.log("Campo 'Generado' actualizado para manutodorov.");
+
+                                    // Agrega el correo a la lista de desactivados
+                                    manutodorovRef.update({ membrisiados: firebase.firestore.FieldValue.arrayUnion(mail) })
+                                        .then(() => {
+                                            console.log("Correo agregado a la lista de membrisiados en manutodorov.");
+                                        })
+                                        .catch((error) => {
+                                            console.error('Error al agregar el correo a la lista de membrisiados en manutodorov:', error);
+                                        });
+                                })
+                                .catch((error) => {
+                                    console.error('Error al actualizar el campo Generado:', error);
+                                });
+                        })
+                        .catch((error) => {
+                            console.error('Error al membrisiar usuario:', error);
+                        });
+                });
+            } else {
+                alert("El usuario no existe");
+                // Puedes manejar el caso donde el usuario no existe
+            }
+        })
+        .catch((error) => {
+            console.error('Error al consultar la base de datos:', error);
+        });
+}
 
 
 
@@ -285,13 +342,42 @@ function mostrarCantidadCodigosDisponibles() {
         });
 }
 
+function contarUsuariosActivados() {
+    const db = firebase.firestore();
+    const usuariosRef = db.collection('Usuarios');
+    
+    usuariosRef.where('activado', '==', true)
+        .get()
+        .then((querySnapshot) => {
+            const cantidadUsuariosActivados = querySnapshot.size;
+            document.getElementById('cantidadUsuariosActivados').textContent = `La cantidad de usuarios activados es: ${cantidadUsuariosActivados}`;
+        })
+        .catch((error) => {
+            console.error('Error al consultar la base de datos:', error);
+        });
+}
 
+function contarUsuariosDesactivados() {
+    const db = firebase.firestore();
+    const usuariosRef = db.collection('Usuarios');
+    
+    usuariosRef.where('activado', '==', false)
+        .get()
+        .then((querySnapshot) => {
+            const cantidadUsuariosActivados = querySnapshot.size;
+            alert(`La cantidad de usuarios desactivados es: ${cantidadUsuariosActivados}`);
+        })
+        .catch((error) => {
+            console.error('Error al consultar la base de datos:', error);
+        });
+}
 
 
 // Llama a la función al cargar la página
 window.onload = function() {
     mostrarCantidadGenerada();
     mostrarCantidadCodigosDisponibles();
+    contarUsuariosActivados();
 };
 
 
