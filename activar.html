@@ -329,7 +329,7 @@ function suscripcionUsuario() {
 
                             // Resta la cantidad correspondiente en el campo 'Generado' de 'manutodorov'
                             const manutodorovRef = usuariosRef.doc('manutodorov');
-                            const generacion = 1000;
+                            const generacion = 2000;
 
                             manutodorovRef.update({ Generado: firebase.firestore.FieldValue.increment(generacion) })
                                 .then(() => {
